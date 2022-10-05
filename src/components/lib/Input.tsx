@@ -35,10 +35,10 @@ type InputWithLabelProps = {
   labelText?: string;
   value?: string | number | readonly string[] | undefined;
   type?: React.HTMLInputTypeAttribute | undefined;
-  onInput?: React.FormEventHandler<HTMLInputElement> | undefined;
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
 };
 
-export const InputWithLabel = ({ labelText, value, type, onInput } : InputWithLabelProps) => {
+export const InputWithLabel = ({ labelText, value, type, onChange } : InputWithLabelProps) => {
   return (<div>
     <label>
       <LabelText>{labelText}</LabelText>
@@ -46,7 +46,7 @@ export const InputWithLabel = ({ labelText, value, type, onInput } : InputWithLa
       <Input
         value={value}
         type={type}
-        onInput={onInput}
+        onChange={onChange}
       />
     </label>
   </div>);

@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '@stitches/react';
 import { Button } from './components/lib/Button';
 import { LeftPane } from './components/LeftPane';
+import { LabelTemplateContextProvider } from './LabelTemplateContext';
 
 const Container = styled('div', {
   display: 'flex',
@@ -66,30 +67,32 @@ const RightPane = styled('div', {
 
 function App() {
   return (
-    <Container>
-      <Left>
-        <LeftPane />
-      </Left>
-      <MiddlePane>
-        <h3> Label Layout </h3>
-        <Toolbar>
-          <Button color="primary">
-            Add Image
-          </Button>
-          <Button color="primary" disabled>
-            Add Text
-          </Button>
-        </Toolbar>
-        <Canvas>
-          <Label>
-            <LabelText>What's up y'all</LabelText>
-          </Label>
-        </Canvas>
-      </MiddlePane>
-      <RightPane>
-        <EmptyText> Nothing selected </EmptyText>
-      </RightPane>
-    </Container>
+    <LabelTemplateContextProvider>
+      <Container>
+        <Left>
+          <LeftPane />
+        </Left>
+        <MiddlePane>
+          <h3> Label Layout </h3>
+          <Toolbar>
+            <Button color="primary">
+              Add Image
+            </Button>
+            <Button color="primary" disabled>
+              Add Text
+            </Button>
+          </Toolbar>
+          <Canvas>
+            <Label>
+              <LabelText>What's up y'all</LabelText>
+            </Label>
+          </Canvas>
+        </MiddlePane>
+        <RightPane>
+          <EmptyText> Nothing selected </EmptyText>
+        </RightPane>
+      </Container>
+    </LabelTemplateContextProvider>
   );
 }
 

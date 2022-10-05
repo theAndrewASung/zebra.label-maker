@@ -1,6 +1,7 @@
 import { styled } from '../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
 import { InputWithLabel } from './lib/Input';
+import { useLabelTemplateContext } from '../LabelTemplateContext';
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',
@@ -49,6 +50,7 @@ const EmptyText = styled('small', {
 });
 
 export const LeftPane = () => {
+  const [ template, setTemplate ] = useLabelTemplateContext();
   return (
     <Container defaultValue="elements">
       <TabBar>
@@ -59,12 +61,12 @@ export const LeftPane = () => {
         <EmptyText> No elements added yet. </EmptyText>
       </TabContent>
       <TabContent value="label">
-        <InputWithLabel labelText="Name" value={"My New Label"} />
+        <InputWithLabel labelText="Name" value={template.name} onChange={e => setTemplate({ type: 'update', name: e.target.value })} />
         <Divider />
         <h5> Label Specifications </h5>
-        <InputWithLabel labelText="DPI" value={300} type="number" />
-        <InputWithLabel labelText="Width" value={2.25} type="number" />
-        <InputWithLabel labelText="Height" value={1.25} type="number" />
+        <InputWithLabel labelText="DPI" type="number" value={template.dpi} onChange={e => setTemplate({ type: 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Width" type="number" value={template.width} onChange={e => setTemplate({ type: 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Height" type="number" value={template.height} onChange={e => setTemplate({ type: 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
       </TabContent>
     </Container>
   );
