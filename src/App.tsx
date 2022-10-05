@@ -1,6 +1,7 @@
 import React from 'react';
 import { styled } from '@stitches/react';
 import * as Tabs from '@radix-ui/react-tabs';
+import { Button } from './components/lib/Button';
 
 const Container = styled('div', {
   display: 'flex',
@@ -31,15 +32,6 @@ const Toolbar = styled('div', {
   margin: '0px 5px',
   textAlign: 'right',
   width: '100%',
-});
-const Button = styled('button', {
-  outline: 'none',
-  border: 'none',
-  backgroundColor: 'hsl(292 50.2% 46.9%)',
-  color: '#fff',
-  padding: '10px 15px',
-  borderRadius: '5px',
-  margin: '5px',
 });
 
 const Canvas = styled('div', {
@@ -116,10 +108,10 @@ function App() {
       <MiddlePane>
         <h3> Label Layout </h3>
         <Toolbar>
-          <Button>
+          <Button color="primary">
             Add Image
           </Button>
-          <Button>
+          <Button color="primary" disabled>
             Add Text
           </Button>
         </Toolbar>
