@@ -1,16 +1,16 @@
 import React from 'react';
 import { styled } from '@stitches/react';
-import * as Tabs from '@radix-ui/react-tabs';
 import { Button } from './components/lib/Button';
-import { Input } from './components/lib/Input';
+import { LeftPane } from './components/LeftPane';
 
 const Container = styled('div', {
   display: 'flex',
   width: '100vw',
+  height: '100vh',
   margin: '0 auto',
 });
 
-const LeftPane = styled('div', {
+const Left = styled('div', {
   width: '25%',
 });
 
@@ -18,12 +18,6 @@ const EmptyText = styled('small', {
   fontStyle: 'italic',
   color: '#666',
 });
-
-const Divider = styled('hr', {
-  outline: 'none',
-  border: 'none',
-  borderTop: '1px solid #eee',
-})
 
 const MiddlePane = styled('div', {
   width: '50%',
@@ -73,39 +67,9 @@ const RightPane = styled('div', {
 function App() {
   return (
     <Container>
-      <LeftPane>
-        <Tabs.Root>
-          <Tabs.List>
-            <Tabs.Trigger value="label">Label</Tabs.Trigger>
-            <Tabs.Trigger value="elements">Elements</Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="label">
-            <h4> Saved </h4>
-            <EmptyText> No saved layouts </EmptyText>
-            <Divider />
-            <h4> Specifications </h4>
-            <div>
-              <label>
-                DPI <Input />
-              </label>
-            </div>
-            <div>
-              <label>
-                Width <Input />
-              </label>
-            </div>
-            <div>
-              <label>
-                Height <Input />
-              </label>
-            </div>
-          </Tabs.Content>
-          <Tabs.Content value="elements">
-            <h4> Elements </h4>
-            <EmptyText> No elements added yet. </EmptyText>
-          </Tabs.Content>
-        </Tabs.Root>
-      </LeftPane>
+      <Left>
+        <LeftPane />
+      </Left>
       <MiddlePane>
         <h3> Label Layout </h3>
         <Toolbar>

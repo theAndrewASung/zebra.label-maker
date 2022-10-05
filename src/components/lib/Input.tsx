@@ -1,8 +1,15 @@
 import { styled } from '../../stitches.config';
 
+const LabelText = styled('span', {
+  fontSize: '0.8rem',
+  fontWeight: '500',
+  color: '$slate11',
+});
+
 export const Input = styled('input', {
   outline: 'none',
-  border: '1px solid',
+  border:'none',
+  borderRadius:' 5px',
   padding: '8px 10px',
   margin: '5px',
   cursor: 'text',
@@ -23,3 +30,24 @@ export const Input = styled('input', {
     cursor: 'default !important',
   },
 });
+
+type InputWithLabelProps = {
+  labelText?: string;
+  value?: string | number | readonly string[] | undefined;
+  type?: React.HTMLInputTypeAttribute | undefined;
+  onInput?: React.FormEventHandler<HTMLInputElement> | undefined;
+};
+
+export const InputWithLabel = ({ labelText, value, type, onInput } : InputWithLabelProps) => {
+  return (<div>
+    <label>
+      <LabelText>{labelText}</LabelText>
+      <br />
+      <Input
+        value={value}
+        type={type}
+        onInput={onInput}
+      />
+    </label>
+  </div>);
+};
