@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '@stitches/react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Button } from './components/lib/Button';
+import { Input } from './components/lib/Input';
 
 const Container = styled('div', {
   display: 'flex',
@@ -85,17 +86,17 @@ function App() {
             <h4> Specifications </h4>
             <div>
               <label>
-                DPI <input />
+                DPI <Input />
               </label>
             </div>
             <div>
               <label>
-                Width <input />
+                Width <Input />
               </label>
             </div>
             <div>
               <label>
-                Height <input />
+                Height <Input />
               </label>
             </div>
           </Tabs.Content>
