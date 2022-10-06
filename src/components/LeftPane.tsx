@@ -1,15 +1,17 @@
 import { styled } from '../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
 import { InputWithLabel } from './lib/Input';
-import { TextElementPayload, useLabelTemplateContext } from '../LabelTemplateContext';
+import { TextElementPayload, useLabelTemplateContext } from '../context/LabelTemplateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFont } from '@fortawesome/free-solid-svg-icons'
+import { useUserContext } from '../context/UserContext';
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',
   borderRight: '1px solid $slate6',
   boxShadow: '0px 0px 3px 2px var(--color-slate6)',
   height: '100%',
+  overflow: 'hidden',
 });
 const TabBar = styled(Tabs.List, {
   padding: '0px',
@@ -46,6 +48,14 @@ const ElementRow = styled('div', {
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'row',
+  variants: {
+    active: {
+      true: {
+        backgroundColor: '$cyan3',
+        color:'$cyan10',
+      }
+    }
+  }
 });
 
 const Divider = styled('hr', {
@@ -74,6 +84,7 @@ const JSONPreview = styled('div', {
 
 export const LeftPane = () => {
   const [ state, dispatch ] = useLabelTemplateContext();
+  const [ userContext, dispatchUserContext ] = useUserContext();
   return (
     <Container defaultValue="elements">
       <TabBar>
@@ -84,7 +95,11 @@ export const LeftPane = () => {
       <TabContent value="elements">
         { !state.elements.length ? 
           <EmptyText> No elements added yet. </EmptyText>
-          : state.elements.map(e => <ElementRow>
+          : state.elements.map((e,i) => <ElementRow
+            key={i}
+            active={userContext.activeElementIndex === i}
+            onClick={() => dispatchUserContext({ type : 'set-active-element', index : i })}
+          >
             {e.type === 'text' ? (<>
               <FontAwesomeIcon icon={faFont} fixedWidth />
               <small>{(e as TextElementPayload).text}</small>

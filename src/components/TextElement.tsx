@@ -1,6 +1,6 @@
 import { styled } from '@stitches/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TextElementPayload } from '../LabelTemplateContext';
+import { TextElementPayload } from '../context/LabelTemplateContext';
 import { addMouseMoveListenerFn } from './MiddlePane';
 
 const TextElementCSS = {
@@ -35,10 +35,12 @@ const TextElementSizer = styled('span', {...TextElementCSS,
 type TextElementProps = {
   payload: TextElementPayload;
   onPayloadChange: (payloadUpdates: Partial<TextElementPayload>) => void;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
   addMouseMoveListener: addMouseMoveListenerFn;
 };
 
-export const TextElement = ({ payload, onPayloadChange, addMouseMoveListener }: TextElementProps) => {
+export const TextElement = ({ payload, onPayloadChange, onClick, addMouseMoveListener }: TextElementProps) => {
+
   // State
   const { x, y, text } = payload;
   const setText = (text: string) => onPayloadChange({ text });
@@ -109,6 +111,7 @@ export const TextElement = ({ payload, onPayloadChange, addMouseMoveListener }: 
       value={text}
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
+      onClick={onClick}
       onDoubleClick={onDoubleClick}
       onChange={e => setText(e.target.value ?? '')}
       autoFocus

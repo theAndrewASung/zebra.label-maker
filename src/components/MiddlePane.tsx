@@ -1,7 +1,8 @@
 
 import { styled } from '@stitches/react';
 import React, { useCallback, useRef } from 'react';
-import { TextElementPayload, useLabelTemplateContext } from '../LabelTemplateContext';
+import { TextElementPayload, useLabelTemplateContext } from '../context/LabelTemplateContext';
+import { UserContextPayload, useUserContext } from '../context/UserContext';
 import { Button } from './lib/Button';
 import { TextElement } from './TextElement';
 
@@ -40,6 +41,7 @@ export const MiddlePane = () => {
   const inToPx = (inches: number) => (canvasZoom * 100 * inches) + 'px';
 
   const [ state, dispatch ] = useLabelTemplateContext();
+  const [ , dispatchUserContext ] = useUserContext();
 
   const css = {
     width: inToPx(state?.width ?? 0),
@@ -69,7 +71,10 @@ export const MiddlePane = () => {
       <Button color="primary" disabled>
         Add Image
       </Button>
-      <Button color="primary" onClick={() => dispatch({ type : 'new-text-element', text: 'Some custom text' })}>
+      <Button color="primary" onClick={() => {
+        dispatchUserContext({ type : 'set-active-element', index : state.elements.length });
+        dispatch({ type : 'new-text-element', text: 'Some custom text' })
+      }}>
         Add Text
       </Button>
     </Toolbar>
@@ -79,6 +84,7 @@ export const MiddlePane = () => {
           payload.type === 'text' ? <TextElement
             key={index}
             payload={payload as TextElementPayload}
+            onClick={e => dispatchUserContext({ type : 'set-active-element', index })}
             onPayloadChange={updates => {
               const { type, ...remainingUpdates } = updates;
               dispatch({

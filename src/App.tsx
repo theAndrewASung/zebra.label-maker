@@ -1,7 +1,9 @@
 import { styled } from '@stitches/react';
 import { LeftPane } from './components/LeftPane';
-import { LabelTemplateContextProvider } from './LabelTemplateContext';
+import { LabelTemplateContextProvider } from './context/LabelTemplateContext';
 import { MiddlePane } from './components/MiddlePane';
+import { UserContextProvider } from './context/UserContext';
+import { RightPane } from './components/RightPane';
 
 const Container = styled('div', {
   display: 'flex',
@@ -14,35 +16,31 @@ const Left = styled('div', {
   width: '25%',
 });
 
-const EmptyText = styled('small', {
-  fontStyle: 'italic',
-  color: '#666',
-});
-
 const Middle = styled('div', {
   width: '50%',
 });
 
-
-const RightPane = styled('div', {
+const Right = styled('div', {
   width: '25%',
 });
 
 function App() {
   return (
-    <LabelTemplateContextProvider>
-      <Container>
-        <Left>
-          <LeftPane />
-        </Left>
-        <Middle>
-          <MiddlePane />
-        </Middle>
-        <RightPane>
-          <EmptyText> Nothing selected </EmptyText>
-        </RightPane>
-      </Container>
-    </LabelTemplateContextProvider>
+    <UserContextProvider>
+      <LabelTemplateContextProvider>
+        <Container>
+          <Left>
+            <LeftPane />
+          </Left>
+          <Middle>
+            <MiddlePane />
+          </Middle>
+          <Right>
+            <RightPane />
+          </Right>
+        </Container>
+      </LabelTemplateContextProvider>
+    </UserContextProvider>
   );
 }
 
