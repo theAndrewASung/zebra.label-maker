@@ -1,7 +1,7 @@
 
 import { styled } from '@stitches/react';
 import React, { useCallback, useRef, useState } from 'react';
-import { useLabelTemplateContext } from '../LabelTemplateContext';
+import { TextElementPayload, useLabelTemplateContext } from '../LabelTemplateContext';
 import { Button } from './lib/Button';
 import { TextElement } from './TextElement';
 
@@ -39,11 +39,11 @@ export const MiddlePane = () => {
   const canvasZoom = 2;
   const inToPx = (inches: number) => (canvasZoom * 100 * inches) + 'px';
 
-  const [ template ] = useLabelTemplateContext();
+  const [ state, dispatch ] = useLabelTemplateContext();
 
   const css = {
-    width: inToPx(template?.width ?? 0),
-    height: inToPx(template?.height ?? 0),
+    width: inToPx(state?.width ?? 0),
+    height: inToPx(state?.height ?? 0),
     fontSize: (canvasZoom * 10)+ 'px',
   };
 
@@ -69,16 +69,27 @@ export const MiddlePane = () => {
       <Button color="primary" disabled>
         Add Image
       </Button>
-      <Button color="primary">
+      <Button color="primary" onClick={() => dispatch({ type : 'new-text-element', text: 'Some custom text' })}>
         Add Text
       </Button>
     </Toolbar>
     <Canvas onMouseMove={onMouseMove}>
       <Label css={css}>
-        <TextElement
-          canvasZoom={canvasZoom}
-          addMouseMoveListener={addMouseMoveListener}
-        />
+        {state.elements.map((payload, index) =>
+          payload.type === 'text' ? <TextElement
+            key={index}
+            payload={payload as TextElementPayload}
+            onPayloadChange={updates => {
+              const { type, ...remainingUpdates } = updates;
+              dispatch({
+                type : 'update-text-element',
+                index,
+                ...remainingUpdates,
+              })
+            }}
+            addMouseMoveListener={addMouseMoveListener}
+          /> : null
+        )}
       </Label>
     </Canvas>
   </div>)

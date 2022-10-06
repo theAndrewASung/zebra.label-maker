@@ -1,5 +1,6 @@
 import { styled } from '@stitches/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LabelElementPayload, TextElementPayload } from '../LabelTemplateContext';
 import { addMouseMoveListenerFn } from './MiddlePane';
 
 const TextElementCSS = {
@@ -13,6 +14,7 @@ const TextElementCSS = {
   width: 'fit-content',
   '&:hover': {
     backgroundColor: '$slate2',
+    pointer: 'default',
   },
   '&:focus': {
     backgroundColor: '$cyan2',
@@ -27,15 +29,15 @@ const TextElementSizer = styled('span', {...TextElementCSS,
 });
 
 type TextElementProps = {
-  canvasZoom: number;
+  payload: TextElementPayload;
+  onPayloadChange: (payloadUpdates: Partial<TextElementPayload>) => void;
   addMouseMoveListener: addMouseMoveListenerFn;
 };
 
-export const TextElement = ({ canvasZoom, addMouseMoveListener }: TextElementProps) => {
+export const TextElement = ({ payload, onPayloadChange, addMouseMoveListener }: TextElementProps) => {
   // State
-  const [text, setText] = useState<string>("Your Text Here");
-  const [x, setX] = useState<number>(canvasZoom * 100 * 0.25);
-  const [y, setY] = useState<number>(canvasZoom * 100 * 0.5);
+  const { x, y, text } = payload;
+  const setText = (text: string) => onPayloadChange({ text });
 
   // Drag and Drop
   const [ mousePosition, setMousePosition ] = useState<{
@@ -62,12 +64,14 @@ export const TextElement = ({ canvasZoom, addMouseMoveListener }: TextElementPro
     if (!mousePosition) return;
 
     const removeListener = addMouseMoveListener((e: React.MouseEvent<HTMLDivElement>) => {
-      setX(mousePosition.textX + e.clientX - mousePosition.mouseX);
-      setY(mousePosition.textY + e.clientY - mousePosition.mouseY);
+      onPayloadChange({
+        x : mousePosition.textX + e.clientX - mousePosition.mouseX,
+        y : mousePosition.textY + e.clientY - mousePosition.mouseY,
+      });
     });
 
     return () => removeListener();
-  }, [ mousePosition, addMouseMoveListener ]);
+  }, [ mousePosition, addMouseMoveListener, onPayloadChange ]);
 
   const onMouseUp = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
     if (!mousePosition) return;
@@ -78,7 +82,6 @@ export const TextElement = ({ canvasZoom, addMouseMoveListener }: TextElementPro
   // Text Editing
   const onDoubleClick = (e: React.MouseEvent<HTMLInputElement>) => {
     e.currentTarget.focus();
-    e.currentTarget.setSelectionRange(0, e.currentTarget.value.length);
   };
 
   // note: ref is assigned this way so that useMemo below triggers the first time that the ref is set
@@ -104,6 +107,8 @@ export const TextElement = ({ canvasZoom, addMouseMoveListener }: TextElementPro
       onMouseUp={onMouseUp}
       onDoubleClick={onDoubleClick}
       onChange={e => setText(e.target.value ?? '')}
+      autoFocus
+      onFocus={e => e.currentTarget.setSelectionRange(0, e.currentTarget.value.length)}
       css={{
         top: y + 'px',
         left: x + 'px',
