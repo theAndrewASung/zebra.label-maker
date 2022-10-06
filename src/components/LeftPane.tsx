@@ -49,24 +49,42 @@ const EmptyText = styled('small', {
   color: '#666',
 });
 
+const JSONPreview = styled('div', {
+  backgroundColor: '$cyan2',
+  borderRadius: '5px',
+  whiteSpace: 'pre',
+  fontFamily: 'monospace',
+  fontSize: '0.7rem',
+  maxHeight: '500px',
+  overflowY: 'scroll',
+  padding: '5px',
+  border: '1px solid',
+  borderColor: '$cyan6',
+})
+
 export const LeftPane = () => {
-  const [ template, setTemplate ] = useLabelTemplateContext();
+  const [ state, dispatch ] = useLabelTemplateContext();
   return (
     <Container defaultValue="elements">
       <TabBar>
         <Tab value="elements">Elements</Tab>
         <Tab value="label">Label</Tab>
+        <Tab value="export">Export</Tab>
       </TabBar>
       <TabContent value="elements">
         <EmptyText> No elements added yet. </EmptyText>
       </TabContent>
       <TabContent value="label">
-        <InputWithLabel labelText="Name" value={template.name} onChange={e => setTemplate({ type: 'update', name: e.target.value })} />
+        <InputWithLabel labelText="Name" value={state.name} onChange={e => dispatch({ type: 'update', name: e.target.value })} />
         <Divider />
         <h5> Label Specifications </h5>
-        <InputWithLabel labelText="DPI" type="number" value={template.dpi} onChange={e => setTemplate({ type: 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Width" type="number" value={template.width} onChange={e => setTemplate({ type: 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Height" type="number" value={template.height} onChange={e => setTemplate({ type: 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="DPI" type="number" value={state.dpi} onChange={e => dispatch({ type: 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Width" type="number" value={state.width} onChange={e => dispatch({ type: 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Height" type="number" value={state.height} onChange={e => dispatch({ type: 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
+      </TabContent>
+      <TabContent value="export">
+        <h5> JSON Data Format </h5>
+        <JSONPreview>{JSON.stringify(state, null, 2)}</JSONPreview>
       </TabContent>
     </Container>
   );
