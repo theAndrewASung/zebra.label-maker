@@ -1,6 +1,6 @@
 import { styled } from '@stitches/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LabelElementPayload, TextElementPayload } from '../LabelTemplateContext';
+import { TextElementPayload } from '../LabelTemplateContext';
 import { addMouseMoveListenerFn } from './MiddlePane';
 
 const TextElementCSS = {
@@ -12,6 +12,7 @@ const TextElementCSS = {
   border: '1px solid transparent',
   display: 'block',
   width: 'fit-content',
+  backgroundColor: 'transparent',
   '&:hover': {
     backgroundColor: '$slate2',
     pointer: 'default',
@@ -20,6 +21,9 @@ const TextElementCSS = {
     backgroundColor: '$cyan2',
     borderColor: '$cyan9',
   },
+  '&::selection': {
+    backgroundColor: '$cyan5',
+  }
 }
 
 const TextElementInput = styled('input', TextElementCSS);

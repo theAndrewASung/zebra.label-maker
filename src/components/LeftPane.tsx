@@ -1,7 +1,9 @@
 import { styled } from '../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
 import { InputWithLabel } from './lib/Input';
-import { useLabelTemplateContext } from '../LabelTemplateContext';
+import { TextElementPayload, useLabelTemplateContext } from '../LabelTemplateContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFont } from '@fortawesome/free-solid-svg-icons'
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',
@@ -38,6 +40,14 @@ const TabContent = styled(Tabs.Content, {
   padding: '5px',
 });
 
+const ElementRow = styled('div', {
+  padding: '5px',
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'row',
+});
+
 const Divider = styled('hr', {
   outline: 'none',
   border: 'none',
@@ -72,7 +82,15 @@ export const LeftPane = () => {
         <Tab value="export">Export</Tab>
       </TabBar>
       <TabContent value="elements">
-        <EmptyText> No elements added yet. </EmptyText>
+        { !state.elements.length ? 
+          <EmptyText> No elements added yet. </EmptyText>
+          : state.elements.map(e => <ElementRow>
+            {e.type === 'text' ? (<>
+              <FontAwesomeIcon icon={faFont} fixedWidth />
+              <small>{(e as TextElementPayload).text}</small>
+            </>) : null}
+          </ElementRow>)
+        }
       </TabContent>
       <TabContent value="label">
         <InputWithLabel labelText="Name" value={state.name} onChange={e => dispatch({ type: 'update', name: e.target.value })} />
