@@ -1,24 +1,12 @@
 import React, { createContext, ReactNode, useContext, useReducer } from "react";
-
-export interface LabelElementPayload {
-  type: 'text';
-  x: number;
-  y: number;
-}
-
-export interface TextElementPayload extends LabelElementPayload {
-  type: 'text';
-  text: string;
-  x: number;
-  y: number;
-};
+import type { ElementPayload, TextElementPayload } from "../types";
 
 type LabelTemplate = {
   name?: string;
   dpi?: number;
   width?: number;
   height?: number;
-  elements: LabelElementPayload[],
+  elements: ElementPayload[],
 }
 
 type LabelTemplateDispatchAction =

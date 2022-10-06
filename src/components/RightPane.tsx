@@ -1,5 +1,6 @@
 import { styled } from '../stitches.config';
-import { TextElementPayload, useLabelTemplateContext } from '../context/LabelTemplateContext';
+import { TextElementPayload } from '../types';
+import { useLabelTemplateContext } from '../context/LabelTemplateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFont, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../context/UserContext';

@@ -1,8 +1,9 @@
 
 import { styled } from '@stitches/react';
 import React, { useCallback, useRef } from 'react';
-import { TextElementPayload, useLabelTemplateContext } from '../context/LabelTemplateContext';
-import { UserContextPayload, useUserContext } from '../context/UserContext';
+import { useLabelTemplateContext } from '../context/LabelTemplateContext';
+import { useUserContext } from '../context/UserContext';
+import { TextElementPayload } from '../types';
 import { Button } from './lib/Button';
 import { TextElement } from './TextElement';
 

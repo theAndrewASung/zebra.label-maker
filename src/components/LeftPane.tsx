@@ -1,7 +1,8 @@
 import { styled } from '../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
 import { InputWithLabel } from './lib/Input';
-import { TextElementPayload, useLabelTemplateContext } from '../context/LabelTemplateContext';
+import { useLabelTemplateContext } from '../context/LabelTemplateContext';
+import { TextElementPayload } from '../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFont } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../context/UserContext';
