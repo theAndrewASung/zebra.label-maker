@@ -15,7 +15,7 @@ export const TextElementControls = ({ payload }: { payload: TextElementPayload})
   const updateElement = useCallback((updates: Partial<Omit<TextElementPayload, 'type'>>) => {
     const index = userContext.activeElementIndex;
     if (typeof index === 'number') {
-      dispatch({ type : 'update-text-element', index, ...updates })
+      dispatch({ action : 'update-element', type: 'text', index,  ...updates })
     }
   }, [ dispatch, userContext ])
 

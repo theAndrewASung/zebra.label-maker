@@ -10,11 +10,12 @@ type LabelTemplate = {
 }
 
 type LabelTemplateDispatchAction =
-| ({ type: 'update' } & Partial<LabelTemplate>)
-| ({ type : 'new-text-element' } & Partial<Omit<TextElementPayload, 'type'>>)
-| ({ type : 'update-text-element', index: number } & Partial<Omit<TextElementPayload, 'type'>>)
-| ({ type : 'new-image-element', file: File } & Partial<Omit<ImageElementPayload, 'type'>>)
-| ({ type : 'update-image-element', index: number } & Partial<Omit<ImageElementPayload, 'type'>>)
+| ({ action : 'update' } & Partial<LabelTemplate>)
+| ({ action : 'new-text-element' } & Partial<Omit<TextElementPayload, 'type'>>)
+| ({ action : 'new-image-element', file: File } & Partial<Omit<ImageElementPayload, 'type'>>)
+| ({ action : 'update-element', index: number, type?: undefined } & Partial<ElementPayload>)
+| ({ action : 'update-element', index: number, type : 'image' } & Partial<ImageElementPayload>)
+| ({ action : 'update-element', index: number, type : 'text'  } & Partial<TextElementPayload>)
 
 const initial: LabelTemplate = {
   name: 'My name',
@@ -26,7 +27,7 @@ const initial: LabelTemplate = {
 
 const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): LabelTemplate => {
   const updated = {...state};
-  switch (action.type) {
+  switch (action.action) {
     case "update":
       if (action.hasOwnProperty('name')) updated.name = action.name;
       if (action.hasOwnProperty('dpi')) updated.dpi = action.dpi;
@@ -44,13 +45,30 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
       } as TextElementPayload);
       return updated;
     
-    case "update-text-element":
+    case "update-element":
       updated.elements = updated.elements.slice(0);
-      const updatedPayload = Object.assign({}, updated.elements[action.index]) as TextElementPayload;
-      if (action.hasOwnProperty('text')) updatedPayload.text = action.text ?? '';
+      const updatedPayload = Object.assign({}, updated.elements[action.index]);
       if (typeof action.x === 'number') updatedPayload.x = action.x;
       if (typeof action.y === 'number') updatedPayload.y = action.y;
-      updated.elements[action.index] = updatedPayload;
+
+      if (action.type === 'text') {
+        const updatedTextPayload = updatedPayload as TextElementPayload;
+        if (action.hasOwnProperty('text')) updatedTextPayload.text = action.text ?? '';
+        updated.elements[action.index] = updatedTextPayload;
+      }
+      else if (action.type === 'image') {
+        const updatedImagePayload = updatedPayload as ImageElementPayload;
+        if (typeof action.width === 'number') updatedImagePayload.width = action.width;
+        if (typeof action.height === 'number') updatedImagePayload.height = action.height;
+        if (action.file instanceof File) {
+          updatedImagePayload.file = action.file
+          updatedImagePayload.url = action.url ?? URL.createObjectURL(action.file)
+        }
+        updated.elements[action.index] = updatedImagePayload;
+      }
+      else {
+        updated.elements[action.index] = updatedPayload;
+      }
 
       return updated;
 
@@ -69,20 +87,6 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
 
       return updated;
 
-      case "update-image-element":
-        updated.elements = updated.elements.slice(0);
-        const updatedImagePayload = Object.assign({}, updated.elements[action.index]) as ImageElementPayload;
-        if (typeof action.x === 'number') updatedImagePayload.x = action.x;
-        if (typeof action.y === 'number') updatedImagePayload.y = action.y;
-        if (typeof action.width === 'number') updatedImagePayload.width = action.width;
-        if (typeof action.height === 'number') updatedImagePayload.height = action.height;
-        if (action.file instanceof File) {
-          updatedImagePayload.file = action.file
-          updatedImagePayload.url = action.url ?? URL.createObjectURL(action.file)
-        }
-        updated.elements[action.index] = updatedImagePayload;
-  
-        return updated;
 
     default:
       return state

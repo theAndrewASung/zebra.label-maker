@@ -15,7 +15,7 @@ export const ImageElementControls = ({ payload }: {payload: ImageElementPayload}
   const updateElement = useCallback((updates: Partial<Omit<ImageElementPayload, 'type'>>) => {
     const index = userContext.activeElementIndex;
     if (typeof index === 'number') {
-      dispatch({ type : 'update-image-element', index, ...updates })
+      dispatch({ action : 'update-element', type : 'image', index, ...updates })
     }
   }, [ dispatch, userContext ])
 

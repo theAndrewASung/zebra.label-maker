@@ -114,12 +114,12 @@ export const LeftPane = () => {
         }
       </TabContent>
       <TabContent value="label">
-        <InputWithLabel labelText="Name" value={state.name} onChange={e => dispatch({ type: 'update', name: e.target.value })} />
+        <InputWithLabel labelText="Name" value={state.name} onChange={e => dispatch({ action : 'update', name: e.target.value })} />
         <Divider />
         <h5> Label Specifications </h5>
-        <InputWithLabel labelText="DPI" type="number" value={state.dpi} onChange={e => dispatch({ type: 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Width" type="number" value={state.width} onChange={e => dispatch({ type: 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Height" type="number" value={state.height} onChange={e => dispatch({ type: 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="DPI" type="number" value={state.dpi} onChange={e => dispatch({ action : 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Width" type="number" value={state.width} onChange={e => dispatch({ action : 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <InputWithLabel labelText="Height" type="number" value={state.height} onChange={e => dispatch({ action : 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
       </TabContent>
       <TabContent value="export">
         <h5> JSON Data Format </h5>

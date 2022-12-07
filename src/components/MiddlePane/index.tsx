@@ -79,7 +79,7 @@ export const MiddlePane = () => {
           const url = URL.createObjectURL(file)
           const image = new Image()
           image.onload = () => {
-            dispatch({ type : 'new-image-element', file, url, width: image.naturalWidth, height: image.naturalHeight })
+            dispatch({ action : 'new-image-element', file, url, width: image.naturalWidth, height: image.naturalHeight })
           }
           image.src = url;
         }
@@ -89,7 +89,7 @@ export const MiddlePane = () => {
       </Button>
       <Button color="primary" onClick={() => {
         dispatchUserContext({ type : 'set-active-element', index : state.elements.length });
-        dispatch({ type : 'new-text-element', text: 'Some custom text' })
+        dispatch({ action : 'new-text-element', text: 'Some custom text' })
       }}>
         Add Text
       </Button>
@@ -106,7 +106,7 @@ export const MiddlePane = () => {
             setActiveElement={() => dispatchUserContext({ type : 'set-active-element', index })}
             x={payload.x}
             y={payload.y}
-            onDragDrop={(x: number, y: number) => dispatch({ type : 'update-text-element', index, x, y })}
+            onDragDrop={(x: number, y: number) => dispatch({ action : 'update-element', index, x, y })}
             addMouseMoveListener={addMouseMoveListener}
           >
             {payload.type === 'text' ? <TextElement
@@ -114,7 +114,8 @@ export const MiddlePane = () => {
               onPayloadChange={updates => {
                 const { type, ...remainingUpdates } = updates;
                 dispatch({
-                  type : 'update-text-element',
+                  action : 'update-element',
+                  type : 'text',
                   index,
                   ...remainingUpdates,
                 })
@@ -125,7 +126,8 @@ export const MiddlePane = () => {
               onPayloadChange={updates => {
                 const { type, ...remainingUpdates } = updates;
                 dispatch({
-                  type : 'update-image-element',
+                  action : 'update-element',
+                  type : 'image',
                   index,
                   ...remainingUpdates,
                 })
