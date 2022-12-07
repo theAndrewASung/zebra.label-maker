@@ -1,7 +1,8 @@
 import React, { createContext, ReactNode, useContext, useReducer } from "react";
 import type { ElementPayload, ImageElementPayload, TextElementPayload } from "../types";
+import { dataFormatToJson } from "../utils/dataStorage";
 
-type LabelTemplate = {
+export type LabelTemplate = {
   name?: string;
   dpi?: number;
   width?: number;
@@ -10,6 +11,7 @@ type LabelTemplate = {
 }
 
 type LabelTemplateDispatchAction =
+| ({ action : 'load', str: string })
 | ({ action : 'update' } & Partial<LabelTemplate>)
 | ({ action : 'new-text-element' } & Partial<TextElementPayload>)
 | ({ action : 'new-image-element', url: string } & Partial<ImageElementPayload>)
@@ -18,7 +20,7 @@ type LabelTemplateDispatchAction =
 | ({ action : 'update-element', index: number, type : 'text'  } & Partial<TextElementPayload>)
 
 const initial: LabelTemplate = {
-  name: 'My name',
+  name: 'New Label',
   dpi: 200,
   width: 2.25,
   height: 1.25,
@@ -28,6 +30,9 @@ const initial: LabelTemplate = {
 const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): LabelTemplate => {
   const updated = {...state};
   switch (action.action) {
+    case "load":
+      return dataFormatToJson(action.str);
+
     case "update":
       if (action.hasOwnProperty('name')) updated.name = action.name;
       if (action.hasOwnProperty('dpi')) updated.dpi = action.dpi;
@@ -82,7 +87,6 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
       updated.elements.push(newImageElement);
 
       return updated;
-
 
     default:
       return state

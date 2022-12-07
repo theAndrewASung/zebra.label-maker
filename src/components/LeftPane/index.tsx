@@ -6,6 +6,9 @@ import { TextElementPayload } from '../../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFont, faImage } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../../context/UserContext';
+import { Button } from '../lib/Button';
+import { useRef } from 'react';
+import { jsonToDataFormat } from '../../utils/dataStorage';
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',
@@ -86,6 +89,8 @@ const JSONPreview = styled('div', {
 export const LeftPane = () => {
   const [ state, dispatch ] = useLabelTemplateContext();
   const [ userContext, dispatchUserContext ] = useUserContext();
+
+  const inputElementRef = useRef<HTMLInputElement>(null);
   return (
     <Container defaultValue="elements">
       <TabBar>
@@ -124,6 +129,41 @@ export const LeftPane = () => {
       <TabContent value="export">
         <h5> JSON Data Format </h5>
         <JSONPreview>{JSON.stringify(state, null, 2)}</JSONPreview>
+        <Divider />
+        <h5> Save / Load ZLM </h5>
+        <input
+          ref={inputElementRef}
+          type="file"
+          style={{ visibility : 'hidden' }}
+          accept=".zlm"
+          onChange={e => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.addEventListener('load', () => {
+                const str = reader.result?.toString();
+                if (str) {
+                  dispatch({ action : 'load', str });
+                }
+              }, false);
+              reader.readAsText(file);
+            }
+
+            e.target.files = null
+          }}
+        />
+        <Button onClick={() => inputElementRef.current?.click()}>
+          Load
+        </Button>
+        <Button onClick={() => {
+          const blob = new Blob([jsonToDataFormat(state)]);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.setAttribute('download', `${(state.name ?? 'label').replace(/\s+/g, '_').toLowerCase()}.zlm`);
+          a.click(); 
+        }}>
+          Save
+        </Button>
       </TabContent>
     </Container>
   );
