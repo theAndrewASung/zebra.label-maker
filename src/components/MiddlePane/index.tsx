@@ -1,11 +1,11 @@
 
 import { styled } from '@stitches/react';
 import React, { useCallback, useRef } from 'react';
-import { useLabelTemplateContext } from '../context/LabelTemplateContext';
-import { useUserContext } from '../context/UserContext';
-import { ImageElementPayload, TextElementPayload } from '../types';
+import { useLabelTemplateContext } from '../../context/LabelTemplateContext';
+import { useUserContext } from '../../context/UserContext';
+import { ImageElementPayload, TextElementPayload } from '../../types';
 import { ImageElement } from './ImageElement';
-import { Button } from './lib/Button';
+import { Button } from '../lib/Button';
 import { TextElement } from './TextElement';
 
 const Toolbar = styled('div', {
@@ -109,8 +109,8 @@ export const MiddlePane = () => {
               })
             }}
             addMouseMoveListener={addMouseMoveListener}
-          /> :
-          payload.type === 'image' ? <ImageElement
+          />
+          : payload.type === 'image' ? <ImageElement
             key={index}
             payload={payload as ImageElementPayload}
             onClick={e => dispatchUserContext({ type: 'set-active-element', index })}

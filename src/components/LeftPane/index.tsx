@@ -1,11 +1,11 @@
-import { styled } from '../stitches.config';
+import { styled } from '../../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
-import { InputWithLabel } from './lib/Input';
-import { useLabelTemplateContext } from '../context/LabelTemplateContext';
-import { TextElementPayload } from '../types';
+import { InputWithLabel } from '../lib/Input';
+import { useLabelTemplateContext } from '../../context/LabelTemplateContext';
+import { TextElementPayload } from '../../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFont, faImage } from '@fortawesome/free-solid-svg-icons'
-import { useUserContext } from '../context/UserContext';
+import { useUserContext } from '../../context/UserContext';
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',

@@ -1,7 +1,7 @@
 import { styled } from '@stitches/react'
 import { useCallback, useEffect, useState } from 'react';
-import { ImageElementPayload } from '../types';
-import { addMouseMoveListenerFn } from './MiddlePane';
+import { ImageElementPayload } from '../../types';
+import { addMouseMoveListenerFn } from '.';
 
 const ImageTag = styled('img', {
   position: 'absolute',

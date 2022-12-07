@@ -1,7 +1,7 @@
 import { styled } from '@stitches/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { TextElementPayload } from '../types';
-import { addMouseMoveListenerFn } from './MiddlePane';
+import { TextElementPayload } from '../../types';
+import { addMouseMoveListenerFn } from '.';
 
 const TextElementCSS = {
   position: 'absolute',
