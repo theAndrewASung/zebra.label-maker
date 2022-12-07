@@ -42,6 +42,7 @@ export const ElementContainer = ({ active, x, y, addMouseMoveListener, setActive
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
     setActiveElement();
+    e.stopPropagation();
     if (mousePosition) return;
 
     e.preventDefault(); // don't focus on input
@@ -51,7 +52,7 @@ export const ElementContainer = ({ active, x, y, addMouseMoveListener, setActive
       textX: x,
       textY: y,
     });
-  }, [ mousePosition, x, y ]);
+  }, [ setActiveElement, mousePosition, x, y ]);
 
   // onMouseMove on canvas
   useEffect(() => {

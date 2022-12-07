@@ -94,7 +94,10 @@ export const MiddlePane = () => {
         Add Text
       </Button>
     </Toolbar>
-    <Canvas onMouseMove={onMouseMove}>
+    <Canvas
+      onMouseMove={onMouseMove}
+      onMouseDown={() => dispatchUserContext({ type : 'set-active-element', index: null })}
+    >
       <Label css={css}>
         {state.elements.map((payload, index) =>
           <ElementContainer
