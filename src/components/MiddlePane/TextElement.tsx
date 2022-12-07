@@ -1,10 +1,8 @@
 import { styled } from '@stitches/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { TextElementPayload } from '../../types';
-import { addMouseMoveListenerFn } from '.';
 
 const TextElementCSS = {
-  position: 'absolute',
   fontFamily: 'Noto Sans',
   fontSize: '1rem',
   textAlign: 'center',
@@ -28,6 +26,7 @@ const TextElementCSS = {
 
 const TextElementInput = styled('input', TextElementCSS);
 const TextElementSizer = styled('span', {...TextElementCSS,
+  position: 'absolute',
   whiteSpace: 'pre',
   visibility: 'hidden',
 });
@@ -36,54 +35,13 @@ type TextElementProps = {
   payload: TextElementPayload;
   onPayloadChange: (payloadUpdates: Partial<TextElementPayload>) => void;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
-  addMouseMoveListener: addMouseMoveListenerFn;
 };
 
-export const TextElement = ({ payload, onPayloadChange, onClick, addMouseMoveListener }: TextElementProps) => {
+export const TextElement = ({ payload, onPayloadChange, onClick }: TextElementProps) => {
 
   // State
-  const { x, y, text } = payload;
+  const { text } = payload;
   const setText = (text: string) => onPayloadChange({ text });
-
-  // Drag and Drop
-  const [ mousePosition, setMousePosition ] = useState<{
-    mouseX: number;
-    mouseY: number;
-    textX: number;
-    textY: number;
-  } | null>(null);
-
-  const onMouseDown = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    if (mousePosition) return;
-
-    e.preventDefault(); // don't focus on input
-    setMousePosition({
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      textX: x,
-      textY: y,
-    });
-  }, [ mousePosition, x, y ]);
-
-  // onMouseMove on canvas
-  useEffect(() => {
-    if (!mousePosition) return;
-
-    const removeListener = addMouseMoveListener((e: React.MouseEvent<HTMLDivElement>) => {
-      onPayloadChange({
-        x : mousePosition.textX + e.clientX - mousePosition.mouseX,
-        y : mousePosition.textY + e.clientY - mousePosition.mouseY,
-      });
-    });
-
-    return () => removeListener();
-  }, [ mousePosition, addMouseMoveListener, onPayloadChange ]);
-
-  const onMouseUp = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
-    if (!mousePosition) return;
-
-    setMousePosition(null);
-  }, [mousePosition]);
 
   // Text Editing
   const onDoubleClick = (e: React.MouseEvent<HTMLInputElement>) => {
@@ -109,16 +67,12 @@ export const TextElement = ({ payload, onPayloadChange, onClick, addMouseMoveLis
     <TextElementSizer ref={textSizerRefCb} />
     <TextElementInput
       value={text}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onChange={e => setText(e.target.value ?? '')}
       autoFocus
       onFocus={e => e.currentTarget.setSelectionRange(0, e.currentTarget.value.length)}
       css={{
-        top: y + 'px',
-        left: x + 'px',
         width: textWidth ? (textWidth + 'px') : undefined,
       }}
     />

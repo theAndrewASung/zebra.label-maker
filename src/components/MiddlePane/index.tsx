@@ -7,6 +7,7 @@ import { ImageElementPayload, TextElementPayload } from '../../types';
 import { ImageElement } from './ImageElement';
 import { Button } from '../lib/Button';
 import { TextElement } from './TextElement';
+import { ElementContainer } from './ElementContainer';
 
 const Toolbar = styled('div', {
   margin: '0px 5px',
@@ -43,7 +44,7 @@ export const MiddlePane = () => {
   const inToPx = (inches: number) => (canvasZoom * 100 * inches) + 'px';
 
   const [ state, dispatch ] = useLabelTemplateContext();
-  const [ , dispatchUserContext ] = useUserContext();
+  const [ userContext, dispatchUserContext ] = useUserContext();
 
   const css = {
     width: inToPx(state?.width ?? 0),
@@ -96,35 +97,39 @@ export const MiddlePane = () => {
     <Canvas onMouseMove={onMouseMove}>
       <Label css={css}>
         {state.elements.map((payload, index) =>
-          payload.type === 'text' ? <TextElement
+          <ElementContainer
             key={index}
-            payload={payload as TextElementPayload}
-            onClick={e => dispatchUserContext({ type : 'set-active-element', index })}
-            onPayloadChange={updates => {
-              const { type, ...remainingUpdates } = updates;
-              dispatch({
-                type : 'update-text-element',
-                index,
-                ...remainingUpdates,
-              })
-            }}
+            active={index === userContext.activeElementIndex}
+            setActiveElement={() => dispatchUserContext({ type : 'set-active-element', index })}
+            x={payload.x}
+            y={payload.y}
+            onDragDrop={(x: number, y: number) => dispatch({ type : 'update-text-element', index, x, y })}
             addMouseMoveListener={addMouseMoveListener}
-          />
-          : payload.type === 'image' ? <ImageElement
-            key={index}
-            payload={payload as ImageElementPayload}
-            onClick={e => dispatchUserContext({ type: 'set-active-element', index })}
-            onPayloadChange={updates => {
-              const { type, ...remainingUpdates } = updates;
-              dispatch({
-                type : 'update-image-element',
-                index,
-                ...remainingUpdates,
-              })
-            }}
-            addMouseMoveListener={addMouseMoveListener}
-          />
-          :  null
+          >
+            {payload.type === 'text' ? <TextElement
+              payload={payload as TextElementPayload}
+              onPayloadChange={updates => {
+                const { type, ...remainingUpdates } = updates;
+                dispatch({
+                  type : 'update-text-element',
+                  index,
+                  ...remainingUpdates,
+                })
+              }}
+            />
+            : payload.type === 'image' ? <ImageElement
+              payload={payload as ImageElementPayload}
+              onPayloadChange={updates => {
+                const { type, ...remainingUpdates } = updates;
+                dispatch({
+                  type : 'update-image-element',
+                  index,
+                  ...remainingUpdates,
+                })
+              }}
+            />
+            :  null}
+          </ElementContainer>
         )}
       </Label>
     </Canvas>
