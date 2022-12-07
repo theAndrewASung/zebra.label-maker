@@ -8,6 +8,7 @@ import { ImageElement } from './ImageElement';
 import { Button } from '../lib/Button';
 import { TextElement } from './TextElement';
 import { ElementContainer } from './ElementContainer';
+import { loadImageDetailsFromFile } from '../utils';
 
 const Toolbar = styled('div', {
   margin: '0px 5px',
@@ -73,15 +74,11 @@ export const MiddlePane = () => {
   return (<div>
     <h3> Label Layout </h3>
     <Toolbar>
-      <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={e => {
+      <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={async (e) => {
         const file = e.target.files?.[0];
         if (file) {
-          const url = URL.createObjectURL(file)
-          const image = new Image()
-          image.onload = () => {
-            dispatch({ action : 'new-image-element', file, url, width: image.naturalWidth, height: image.naturalHeight })
-          }
-          image.src = url;
+          const details = await loadImageDetailsFromFile(file);
+          dispatch({ action : 'new-image-element', ...details })
         }
       }} />
       <Button color="primary" onClick={() => fileInputRef.current?.click()}>

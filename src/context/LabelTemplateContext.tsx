@@ -11,8 +11,8 @@ type LabelTemplate = {
 
 type LabelTemplateDispatchAction =
 | ({ action : 'update' } & Partial<LabelTemplate>)
-| ({ action : 'new-text-element' } & Partial<Omit<TextElementPayload, 'type'>>)
-| ({ action : 'new-image-element', file: File } & Partial<Omit<ImageElementPayload, 'type'>>)
+| ({ action : 'new-text-element' } & Partial<TextElementPayload>)
+| ({ action : 'new-image-element', url: string } & Partial<ImageElementPayload>)
 | ({ action : 'update-element', index: number, type?: undefined } & Partial<ElementPayload>)
 | ({ action : 'update-element', index: number, type : 'image' } & Partial<ImageElementPayload>)
 | ({ action : 'update-element', index: number, type : 'text'  } & Partial<TextElementPayload>)
@@ -60,10 +60,7 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
         const updatedImagePayload = updatedPayload as ImageElementPayload;
         if (typeof action.width === 'number') updatedImagePayload.width = action.width;
         if (typeof action.height === 'number') updatedImagePayload.height = action.height;
-        if (action.file instanceof File) {
-          updatedImagePayload.file = action.file
-          updatedImagePayload.url = action.url ?? URL.createObjectURL(action.file)
-        }
+        if (typeof action.url    === 'string') updatedImagePayload.url = action.url;
         updated.elements[action.index] = updatedImagePayload;
       }
       else {
@@ -77,8 +74,7 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
         type: 'image',
         x: action.x ?? 10,
         y: action.y ?? 10,
-        file: action.file,
-        url: action.url ?? URL.createObjectURL(action.file),
+        url: action.url ?? '',
         width: action.width ?? 100,
         height: action.height ?? 100,
       };

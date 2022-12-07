@@ -5,6 +5,7 @@ import { useLabelTemplateContext } from "../../context/LabelTemplateContext";
 import { useUserContext } from "../../context/UserContext";
 import { ImageElementPayload } from "../../types";
 import { Button } from "../lib/Button";
+import { loadImageDetailsFromFile } from "../utils";
 import { PixelInput } from "./PixelInput";
 import { RightPaneHeader, SizePositionTable } from "./styledComponents";
 
@@ -39,13 +40,11 @@ export const ImageElementControls = ({ payload }: {payload: ImageElementPayload}
       alt={payload.url}
       style={{ textAlign: 'center', maxWidth: '100%', maxHeight: '200px' }}
     />
-    <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={e => {
+    <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={async (e) => {
       const file = e.target.files?.[0];
       if (file) {
-        const url = URL.createObjectURL(file)
-        const image = new Image()
-        image.onload = () => updateElement({ file, url, width: image.naturalWidth, height: image.naturalHeight })
-        image.src = url;
+        const details = await loadImageDetailsFromFile(file);
+        updateElement(details)
       }
     }} />
     <div style={{ textAlign: 'right' }}>

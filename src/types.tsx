@@ -15,7 +15,6 @@ export interface ImageElementPayload extends ElementPayload {
   type : 'image';
   x: number;
   y: number;
-  file: File;
   url: string;
   width: number;
   height: number;
