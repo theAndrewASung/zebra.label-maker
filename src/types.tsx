@@ -6,7 +6,17 @@ export interface ElementPayload {
 
 export interface TextElementPayload extends ElementPayload {
   type: 'text';
-  text: string;
   x: number;
   y: number;
+  text: string;
 };
+
+export interface ImageElementPayload extends ElementPayload {
+  type : 'image';
+  x: number;
+  y: number;
+  file: File;
+  url: string;
+  width: number;
+  height: number;
+}

@@ -4,7 +4,7 @@ import { InputWithLabel } from './lib/Input';
 import { useLabelTemplateContext } from '../context/LabelTemplateContext';
 import { TextElementPayload } from '../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFont } from '@fortawesome/free-solid-svg-icons'
+import { faFont, faImage } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../context/UserContext';
 
 const Container = styled(Tabs.Root, {
@@ -104,7 +104,12 @@ export const LeftPane = () => {
             {e.type === 'text' ? (<>
               <FontAwesomeIcon icon={faFont} fixedWidth />
               <small>{(e as TextElementPayload).text}</small>
-            </>) : null}
+            </>)
+            : e.type === 'image' ? (<>
+              <FontAwesomeIcon icon={faImage} fixedWidth />
+              <small>Image</small>
+            </>)
+            : null}
           </ElementRow>)
         }
       </TabContent>

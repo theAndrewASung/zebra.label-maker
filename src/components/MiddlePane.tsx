@@ -3,7 +3,8 @@ import { styled } from '@stitches/react';
 import React, { useCallback, useRef } from 'react';
 import { useLabelTemplateContext } from '../context/LabelTemplateContext';
 import { useUserContext } from '../context/UserContext';
-import { TextElementPayload } from '../types';
+import { ImageElementPayload, TextElementPayload } from '../types';
+import { ImageElement } from './ImageElement';
 import { Button } from './lib/Button';
 import { TextElement } from './TextElement';
 
@@ -66,10 +67,23 @@ export const MiddlePane = () => {
     }
   }, [onMouseMoveListeners]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   return (<div>
     <h3> Label Layout </h3>
     <Toolbar>
-      <Button color="primary" disabled>
+      <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={e => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const url = URL.createObjectURL(file)
+          const image = new Image()
+          image.onload = () => {
+            dispatch({ type : 'new-image-element', file, url, width: image.naturalWidth, height: image.naturalHeight })
+          }
+          image.src = url;
+        }
+      }} />
+      <Button color="primary" onClick={() => fileInputRef.current?.click()}>
         Add Image
       </Button>
       <Button color="primary" onClick={() => {
@@ -95,7 +109,22 @@ export const MiddlePane = () => {
               })
             }}
             addMouseMoveListener={addMouseMoveListener}
-          /> : null
+          /> :
+          payload.type === 'image' ? <ImageElement
+            key={index}
+            payload={payload as ImageElementPayload}
+            onClick={e => dispatchUserContext({ type: 'set-active-element', index })}
+            onPayloadChange={updates => {
+              const { type, ...remainingUpdates } = updates;
+              dispatch({
+                type : 'update-image-element',
+                index,
+                ...remainingUpdates,
+              })
+            }}
+            addMouseMoveListener={addMouseMoveListener}
+          />
+          :  null
         )}
       </Label>
     </Canvas>

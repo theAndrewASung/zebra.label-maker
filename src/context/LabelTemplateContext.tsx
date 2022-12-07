@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useReducer } from "react";
-import type { ElementPayload, TextElementPayload } from "../types";
+import type { ElementPayload, ImageElementPayload, TextElementPayload } from "../types";
 
 type LabelTemplate = {
   name?: string;
@@ -12,7 +12,9 @@ type LabelTemplate = {
 type LabelTemplateDispatchAction =
 | ({ type: 'update' } & Partial<LabelTemplate>)
 | ({ type : 'new-text-element' } & Partial<Omit<TextElementPayload, 'type'>>)
-| ({ type : 'update-text-element', index: number } & Partial<Omit<TextElementPayload, 'type'>>);
+| ({ type : 'update-text-element', index: number } & Partial<Omit<TextElementPayload, 'type'>>)
+| ({ type : 'new-image-element', file: File } & Partial<Omit<ImageElementPayload, 'type'>>)
+| ({ type : 'update-image-element', index: number } & Partial<Omit<ImageElementPayload, 'type'>>)
 
 const initial: LabelTemplate = {
   name: 'My name',
@@ -51,6 +53,36 @@ const reducer = (state: LabelTemplate, action: LabelTemplateDispatchAction): Lab
       updated.elements[action.index] = updatedPayload;
 
       return updated;
+
+    case "new-image-element":
+      var newImageElement: ImageElementPayload = {
+        type: 'image',
+        x: action.x ?? 10,
+        y: action.y ?? 10,
+        file: action.file,
+        url: action.url ?? URL.createObjectURL(action.file),
+        width: action.width ?? 100,
+        height: action.height ?? 100,
+      };
+      updated.elements = updated.elements.slice(0);
+      updated.elements.push(newImageElement);
+
+      return updated;
+
+      case "update-image-element":
+        updated.elements = updated.elements.slice(0);
+        const updatedImagePayload = Object.assign({}, updated.elements[action.index]) as ImageElementPayload;
+        if (typeof action.x === 'number') updatedImagePayload.x = action.x;
+        if (typeof action.y === 'number') updatedImagePayload.y = action.y;
+        if (typeof action.width === 'number') updatedImagePayload.width = action.width;
+        if (typeof action.height === 'number') updatedImagePayload.height = action.height;
+        if (action.file instanceof File) {
+          updatedImagePayload.file = action.file
+          updatedImagePayload.url = action.url ?? URL.createObjectURL(action.file)
+        }
+        updated.elements[action.index] = updatedImagePayload;
+  
+        return updated;
 
     default:
       return state
