@@ -2,9 +2,9 @@ import { styled } from '../stitches.config';
 import { ImageElementPayload, TextElementPayload } from '../types';
 import { useLabelTemplateContext } from '../context/LabelTemplateContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFont, faImage, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faFont, faImage, faLink, faLinkSlash, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../context/UserContext';
-import { useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Input, InputWithLabel } from './lib/Input';
 import { Button } from './lib/Button';
 
@@ -28,6 +28,21 @@ const EmptyText = styled('small', {
   color: '#666',
 });
 
+const SizePositionTable = styled('table', {
+  tableLayout: 'fixed',
+  '& th': {
+    width: '10%',
+    fontWeight: 'normal',
+    fontSize: '0.8rem',
+  },
+  '& td': {
+    width: '20%',
+    '& input': {
+      width: '50px',
+    },
+  }
+})
+
 export const RightPane = () => {
   const [ state ] = useLabelTemplateContext();
   const [ userContext ] = useUserContext();
@@ -40,8 +55,8 @@ export const RightPane = () => {
   return (
     <Container>
       {!activeElement ? (<EmptyText> Nothing selected </EmptyText>)
-      : activeElement.type === 'text' ? (<TextElementControls payload={activeElement as TextElementPayload} />)
-      : activeElement.type === 'image' ? (<ImageElementControls payload={activeElement as ImageElementPayload} />)
+      : activeElement.type === 'text'  ? <TextElementControls  payload={activeElement as TextElementPayload} />
+      : activeElement.type === 'image' ? <ImageElementControls payload={activeElement as ImageElementPayload} />
       : null}
     </Container>
   );
@@ -50,27 +65,65 @@ export const RightPane = () => {
 const TextElementControls = ({ payload }: { payload: TextElementPayload}) => {
   const [ , dispatch ] = useLabelTemplateContext();
   const [ userContext, setUserContext ] = useUserContext();
+
+  const updateElement = useCallback((updates: Partial<Omit<TextElementPayload, 'type'>>) => {
+    const index = userContext.activeElementIndex;
+    if (typeof index === 'number') {
+      dispatch({ type : 'update-text-element', index, ...updates })
+    }
+  }, [ dispatch, userContext ])
+
   return <div>
     <RightPaneHeader>
       <FontAwesomeIcon icon={faFont} fixedWidth />
       <strong style={{ flexGrow: 1 }}> Text Element </strong>
       <FontAwesomeIcon icon={faXmark} fixedWidth onClick={() => setUserContext({ type : 'set-active-element', index : null }) }/>
     </RightPaneHeader>
-    <InputWithLabel value={payload.text} labelText="Text" onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-text-element', index: userContext.activeElementIndex, text: e.target.value ?? '' }) : null} />
-    <table>
-      <tr>
-        <td> X </td>
-        <td> <Input value={payload.x} onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-text-element', index: userContext.activeElementIndex, x: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : undefined }) : null} /> </td>
-        <td> Y </td>
-        <td> <Input value={payload.y} onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-text-element', index: userContext.activeElementIndex, y: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : undefined }) : null} /> </td>
-      </tr>
-    </table>
+    <InputWithLabel
+      value={payload.text}
+      labelText="Text"
+      onChange={e => updateElement({ text : e.target.value ?? '' })}
+    />
+    <SizePositionTable>
+      <tbody>
+        <tr>
+          <td> X </td>
+          <td>
+              <PixelInput
+                value={payload.x}
+                onChange={x => payload.x !== x ? updateElement({ x }) : null}
+              />
+          </td>
+          <td> Y </td>
+          <td>
+              <PixelInput
+                value={payload.y}
+                onChange={y => payload.y !== y ? updateElement({ y }) : null}
+              />
+          </td>
+        </tr>
+      </tbody>
+    </SizePositionTable>
   </div>
 };
 
 const ImageElementControls = ({ payload }: {payload: ImageElementPayload}) => {
   const [ , dispatch ] = useLabelTemplateContext();
   const [ userContext, setUserContext ] = useUserContext();
+
+  const updateElement = useCallback((updates: Partial<Omit<ImageElementPayload, 'type'>>) => {
+    const index = userContext.activeElementIndex;
+    if (typeof index === 'number') {
+      dispatch({ type : 'update-image-element', index, ...updates })
+    }
+  }, [ dispatch, userContext ])
+
+  const [lockAspectRatio, setLockAspectRatio] = useState<boolean>(true);
+  const [aspectRatio, setAspectRatio] = useState<number>(payload.width / payload.height);
+  
+  useEffect(() => {
+    if (!lockAspectRatio) setAspectRatio(payload.width / payload.height)
+  }, [ payload, lockAspectRatio, setAspectRatio])
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -90,11 +143,7 @@ const ImageElementControls = ({ payload }: {payload: ImageElementPayload}) => {
       if (file) {
         const url = URL.createObjectURL(file)
         const image = new Image()
-        image.onload = () => {
-          if (typeof userContext.activeElementIndex === 'number') {
-            dispatch({ type : 'update-image-element', index: userContext.activeElementIndex, file, url, width: image.naturalWidth, height: image.naturalHeight })
-          }
-        }
+        image.onload = () => updateElement({ file, url, width: image.naturalWidth, height: image.naturalHeight })
         image.src = url;
       }
     }} />
@@ -103,28 +152,112 @@ const ImageElementControls = ({ payload }: {payload: ImageElementPayload}) => {
         Change Image
       </Button>
     </div>
-    <InputWithLabel
-      value={payload.width}
-      labelText="Width"
-      type="number"
-      onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-image-element', index: userContext.activeElementIndex, width: parseInt(e.target.value) ?? 0 }) : null}
-    />
-    <InputWithLabel
-      value={payload.height}
-      labelText="Height"
-      type="number"
-      onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-image-element', index: userContext.activeElementIndex, height: parseInt(e.target.value) ?? 0 }) : null}
-    />
-    <table>
+    <SizePositionTable>
       <tbody>
         <tr>
-          <td> X </td>
-          <td> <Input value={payload.x} onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-image-element', index: userContext.activeElementIndex, x: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : undefined }) : null} /> </td>
-          <td> Y </td>
-          <td> <Input value={payload.y} onChange={e => typeof userContext.activeElementIndex === 'number' ? dispatch({ type : 'update-image-element', index: userContext.activeElementIndex, y: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : undefined }) : null} /> </td>
+          <th> X </th>
+          <td>
+            <PixelInput
+              value={payload.x}
+              step={1}
+              onChange={x => payload.x !== x ? updateElement({ x }) : null}
+            />
+          </td>
+          <th> Y </th>
+          <td>
+            <PixelInput
+              value={payload.y}
+              step={1}
+              onChange={y => payload.y !== y ? updateElement({ y }) : null}
+            />
+          </td>
+          <td />
+        </tr>
+        <tr>
+          <th> W </th>
+          <td>
+            <PixelInput
+              value={payload.width}
+              step={1}
+              min={1}
+              onChange={width => payload.width !== width ? updateElement({ width, height : lockAspectRatio ? width / aspectRatio : undefined }) : null}
+            />
+          </td>
+          <th> H </th>
+          <td>
+            <PixelInput
+              value={payload.height}
+              step={1}
+              min={1}
+              onChange={height => payload.height !== height ? updateElement({ width : lockAspectRatio ? height * aspectRatio : undefined, height }) : null}
+            />
+          </td>
+          <td>
+            <Button
+              color={lockAspectRatio ? 'primary' : undefined}
+              style={{ padding: '10px' }}
+              onClick={() => setLockAspectRatio((lar: boolean) => !lar)}
+            >
+              <FontAwesomeIcon icon={lockAspectRatio ? faLink : faLinkSlash} fixedWidth />
+            </Button>
+          </td>
         </tr>
       </tbody>
-    </table>
-    
+    </SizePositionTable>
   </div>
+}
+
+type PixelInputProps = {
+  value : number,
+  step? : number,
+  min?  : number,
+  onChange? : (value: number) => void
+}
+
+const PixelInput = ({ value, step, min, onChange } : PixelInputProps) => {
+  const [ state, setState ] = useState<string>(value.toString())
+
+  useEffect(() => {
+    setState(value.toString())
+  }, [ value ])
+
+  const keyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    switch(e.key) {
+      case 'Enter':
+        e.currentTarget.blur();
+        break;
+
+      case 'ArrowUp':
+        e.preventDefault();
+        if (typeof step === 'number') setState(s => (step + parseFloat(s)).toString())
+        break;
+
+      case 'ArrowDown':
+        e.preventDefault();
+        if (typeof step === 'number') setState(s => {
+          const next = step + parseFloat(s);
+
+          return (typeof min === 'number' && next < min ? min : next).toString();
+        })
+        break;
+    }
+  }
+
+  return <Input
+    value={state}
+    onChange={e => setState(e.target.value)}
+    onKeyDown={keyDownHandler}
+    onFocus={e => e.target.select()}
+    onBlur={() => {
+      const newValue = parseFloat(state)
+      if (!isNaN(newValue)
+        && (typeof min !== 'number' || newValue >= min)
+      ) {
+        if (onChange) onChange(newValue)
+      }
+      else {
+        setState(value.toString())
+      }
+    }}
+  />
 }
