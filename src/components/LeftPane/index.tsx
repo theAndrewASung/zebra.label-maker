@@ -1,6 +1,5 @@
 import { styled } from '../../stitches.config';
 import * as Tabs from '@radix-ui/react-tabs';
-import { InputWithLabel } from '../lib/Input';
 import { useLabelTemplateContext } from '../../context/LabelTemplateContext';
 import { TextElementPayload } from '../../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,6 +8,8 @@ import { useUserContext } from '../../context/UserContext';
 import { Button } from '../lib/Button';
 import { useRef } from 'react';
 import { jsonToDataFormat } from '../../utils/dataStorage';
+import { BlurInput } from '../lib/BlurInput';
+import { PixelInput } from '../RightPane/PixelInput';
 
 const Container = styled(Tabs.Root, {
   backgroundColor:'$slate1',
@@ -61,6 +62,14 @@ const ElementRow = styled('div', {
     }
   }
 });
+
+const LabelTable = styled('table', {
+  '& th': {
+    fontSize: '0.8rem',
+    textAlign: 'left',
+    color: '$slate10',    
+  }
+})
 
 const Divider = styled('hr', {
   outline: 'none',
@@ -119,12 +128,29 @@ export const LeftPane = () => {
         }
       </TabContent>
       <TabContent value="label">
-        <InputWithLabel labelText="Name" value={state.name} onChange={e => dispatch({ action : 'update', name: e.target.value })} />
-        <Divider />
-        <h5> Label Specifications </h5>
-        <InputWithLabel labelText="DPI" type="number" value={state.dpi} onChange={e => dispatch({ action : 'update', dpi: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Width" type="number" value={state.width} onChange={e => dispatch({ action : 'update', width: e.target.value ? parseInt(e.target.value) : undefined })} />
-        <InputWithLabel labelText="Height" type="number" value={state.height} onChange={e => dispatch({ action : 'update', height: e.target.value ? parseInt(e.target.value) : undefined })} />
+        <LabelTable>
+          <tbody>
+            <tr>
+              <th> Name </th>
+              <td> <BlurInput value={state.name ?? ''} onChange={name => dispatch({ action: 'update', name })} /> </td>
+            </tr>
+            <tr>
+              <th colSpan={2}> Label Specficiations </th>
+            </tr>
+            <tr>
+              <th> DPI </th>
+              <td> <PixelInput value={state.dpi ?? 100} min={100} step={50} onChange={dpi => dispatch({ action: 'update', dpi })} /> </td>
+            </tr>
+            <tr>
+              <th> Width </th>
+              <td> <PixelInput value={state.width ?? 2} min={0} step={0.25} onChange={width => dispatch({ action: 'update', width })} /> </td>
+            </tr>
+            <tr>
+              <th> Height </th>
+              <td> <PixelInput value={state.height ?? 1} min={0} step={0.25} onChange={height => dispatch({ action: 'update', height })} /> </td>
+            </tr>
+          </tbody>
+        </LabelTable>
       </TabContent>
       <TabContent value="export">
         <h5> JSON Data Format </h5>

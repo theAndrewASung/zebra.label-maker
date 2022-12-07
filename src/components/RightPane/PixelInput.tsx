@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react"
-import { Input } from "../lib/Input"
+import { BlurInput } from "../lib/BlurInput"
 
 type PixelInputProps = {
   value : number,
@@ -9,50 +8,28 @@ type PixelInputProps = {
 }
 
 export const PixelInput = ({ value, step, min, onChange } : PixelInputProps) => {
-  // Bind value to state
-  const [ state, setState ] = useState<string>(value.toString())
-  useEffect(() => setState(value.toString()), [ value ])
-
-  // Special key controls
-  const keyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     switch(e.key) {
-      case 'Enter':
-        e.currentTarget.blur();
-        break;
-
       case 'ArrowUp':
         e.preventDefault();
-        if (typeof step === 'number') setState(s => (step + parseFloat(s)).toString())
+        if (typeof step === 'number' && onChange) onChange(value + step)
         break;
 
       case 'ArrowDown':
         e.preventDefault();
-        if (typeof step === 'number') setState(s => {
-          const next = step + parseFloat(s);
-
-          return (typeof min === 'number' && next < min ? min : next).toString();
-        })
+        if (typeof step === 'number' && onChange) {
+          const next = value - step;
+          onChange(typeof min === 'number' && next < min ? min : next);
+        }
         break;
     }
   }
 
-  return <Input
-    value={state}
-    onChange={e => setState(e.target.value)}
-    onKeyDown={keyDownHandler}
-    onFocus={e => e.target.select()}
-    onBlur={() => {
-      const newValue = parseFloat(state)
-      // Either update the value (sends up onChange)
-      if (!isNaN(newValue)
-        && (typeof min !== 'number' || newValue >= min)
-      ) {
-        if (onChange) onChange(newValue)
-      }
-      // or resets back to the current value
-      else {
-        setState(value.toString())
-      }
-    }}
+  return <BlurInput
+    value={value.toString()}
+    shouldAcceptChange={v => !isNaN(parseFloat(v))}
+    onChange={v => onChange ? onChange(parseFloat(v)) : null}
+    onKeyDown={onKeyDown}
+    style={{ width: '50px' }}
   />
 }

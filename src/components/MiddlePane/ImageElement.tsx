@@ -1,7 +1,9 @@
 import { styled } from '@stitches/react'
 import { ImageElementPayload } from '../../types';
 
-const ImageTag = styled('img', {});
+const ImageTag = styled('img', {
+  display: 'block',
+});
 
 type ImageElementProps = {
   payload: ImageElementPayload;

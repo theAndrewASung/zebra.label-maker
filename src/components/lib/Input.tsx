@@ -1,6 +1,6 @@
 import { styled } from '../../stitches.config';
 
-const LabelText = styled('span', {
+export const LabelText = styled('span', {
   fontSize: '0.8rem',
   fontWeight: '500',
   color: '$slate11',

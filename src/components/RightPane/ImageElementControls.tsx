@@ -5,6 +5,7 @@ import { useLabelTemplateContext } from "../../context/LabelTemplateContext";
 import { useUserContext } from "../../context/UserContext";
 import { ImageElementPayload } from "../../types";
 import { Button } from "../lib/Button";
+import { FileButton } from "../lib/FileButton";
 import { loadImageDetailsFromFile } from "../utils";
 import { PixelInput } from "./PixelInput";
 import { RightPaneHeader, SizePositionTable } from "./styledComponents";
@@ -27,8 +28,6 @@ export const ImageElementControls = ({ payload }: {payload: ImageElementPayload}
     if (!lockAspectRatio) setAspectRatio(payload.width / payload.height)
   }, [ payload, lockAspectRatio, setAspectRatio])
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   return <div>
     <RightPaneHeader>
       <FontAwesomeIcon icon={faImage} fixedWidth />
@@ -40,17 +39,13 @@ export const ImageElementControls = ({ payload }: {payload: ImageElementPayload}
       alt={payload.url}
       style={{ textAlign: 'center', maxWidth: '100%', maxHeight: '200px' }}
     />
-    <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={async (e) => {
-      const file = e.target.files?.[0];
-      if (file) {
+    <div style={{ textAlign: 'right' }}>
+      <FileButton onFileAdd={async (file) => {
         const details = await loadImageDetailsFromFile(file);
         updateElement(details)
-      }
-    }} />
-    <div style={{ textAlign: 'right' }}>
-      <Button onClick={() => fileInputRef.current?.click()}>
-        Change Image
-      </Button>
+      }}>
+          Change Image
+      </FileButton>
     </div>
     <SizePositionTable>
       <tbody>

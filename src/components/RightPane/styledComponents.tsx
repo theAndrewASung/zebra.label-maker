@@ -16,8 +16,5 @@ export const SizePositionTable = styled('table', {
   },
   '& td': {
     width: '20%',
-    '& input': {
-      width: '50px',
-    },
   }
 })

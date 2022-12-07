@@ -9,6 +9,7 @@ import { Button } from '../lib/Button';
 import { TextElement } from './TextElement';
 import { ElementContainer } from './ElementContainer';
 import { loadImageDetailsFromFile } from '../utils';
+import { FileButton } from '../lib/FileButton';
 
 const Toolbar = styled('div', {
   margin: '0px 5px',
@@ -69,21 +70,15 @@ export const MiddlePane = () => {
     }
   }, [onMouseMoveListeners]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   return (<div>
     <h3> Label Layout </h3>
     <Toolbar>
-      <input ref={fileInputRef} type="file" style={{ visibility : 'hidden' }} onChange={async (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-          const details = await loadImageDetailsFromFile(file);
-          dispatch({ action : 'new-image-element', ...details })
-        }
-      }} />
-      <Button color="primary" onClick={() => fileInputRef.current?.click()}>
+      <FileButton color="primary" onFileAdd={async (file) => {
+        const details = await loadImageDetailsFromFile(file);
+        dispatch({ action : 'new-image-element', ...details })
+      }}>
         Add Image
-      </Button>
+      </FileButton>
       <Button color="primary" onClick={() => {
         dispatchUserContext({ type : 'set-active-element', index : state.elements.length });
         dispatch({ action : 'new-text-element', text: 'Some custom text' })

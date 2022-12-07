@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useLabelTemplateContext } from "../../context/LabelTemplateContext";
 import { useUserContext } from "../../context/UserContext";
 import { TextElementPayload } from "../../types";
-import { InputWithLabel } from "../lib/Input";
+import { BlurInput } from "../lib/BlurInput";
 import { PixelInput } from "./PixelInput";
 import { RightPaneHeader, SizePositionTable } from "./styledComponents";
 
@@ -25,24 +25,30 @@ export const TextElementControls = ({ payload }: { payload: TextElementPayload})
       <strong style={{ flexGrow: 1 }}> Text Element </strong>
       <FontAwesomeIcon icon={faXmark} fixedWidth onClick={() => setUserContext({ type : 'set-active-element', index : null }) }/>
     </RightPaneHeader>
-    <InputWithLabel
-      value={payload.text}
-      labelText="Text"
-      onChange={e => updateElement({ text : e.target.value ?? '' })}
-    />
     <SizePositionTable>
       <tbody>
         <tr>
-          <td> X </td>
+          <th> Text </th>
+          <td colSpan={3}>
+            <BlurInput
+              value={payload.text}
+              onChange={text => updateElement({ text })}
+            />
+          </td>
+        </tr>
+        <tr>
+          <th> X </th>
           <td>
               <PixelInput
+                step={1}
                 value={payload.x}
                 onChange={x => payload.x !== x ? updateElement({ x }) : null}
               />
           </td>
-          <td> Y </td>
+          <th> Y </th>
           <td>
               <PixelInput
+                step={1}
                 value={payload.y}
                 onChange={y => payload.y !== y ? updateElement({ y }) : null}
               />
